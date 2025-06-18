@@ -31,18 +31,29 @@ const baseConsolidada = {
 }
 
 const funcoes = {
-  // UsuarioCriado: async (usuario) => {
-
-  //   }
-  // },
-
-  LembreteCriado: async (lembrete) => {
+  UsuarioCriado: async (usuario) => {
     baseConsolidada.usuarios[usuario.id] = { 
       id: usuario.id,
       nome: usuario.nome,
       lembretes: []
-  }
+    }
   },
+
+  LembreteCriado: async (lembrete) => {
+    const usuario = baseConsolidada.usuarios[lembrete.usuarioId];
+    if (!usuario) return console.error('Usuário não encontrado');
+
+    if (!usuario.lembretes) {
+      usuario.lembretes = [];
+    }
+
+    usuario.lembretes.push({
+      id: lembrete.id,
+      texto: lembrete.texto,
+      observacoes: []
+    });
+  },
+
   ObservacaoCriada: async (observacao) => {
     const usuario = baseConsolidada.usuarios[observacao.usuarioId];
     if (!usuario) return console.error('Usuário não encontrado');
@@ -75,7 +86,7 @@ const funcoes = {
   
 
 //endpoint para obtenção da base consolidada (o front end usa)
-app.get('/lembretes', (req, res) => {
+app.get('/usuarios', (req, res) => {
   //devolver a base consolidada como json, use o objeto res
   res.json(baseConsolidada)
 })

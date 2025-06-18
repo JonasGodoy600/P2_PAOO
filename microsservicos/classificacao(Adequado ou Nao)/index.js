@@ -2,13 +2,18 @@ const axios = require('axios')
 const express = require('express')
 const app = express()
 app.use(express.json())
+const palavraChave = 'Maconha'
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 
+
+const genAI =new GoogleGenerativeAI(process.env.AIzaSyActYkZOAIrMAcFN4Z24wZ1QNhXpoj1AI0);
 
 const funcoes = {
 
   LembreteCriado: async (lembrete) => {
     // console.log(lembretes.status.lenght>=50)
+    lembrete.status = await classificarcomGenAi(lembrete.texto);
       console.log(lembrete)
 
     await axios.post(
@@ -25,6 +30,7 @@ const funcoes = {
     //se o texto incluir a palavraChave, trocar o status para importante
     //caso contrário, trocar o status para comum
 
+    observacao.status=await classificarcomGenAi(observacao.texto)||
 
     console.log(observacao.status.includes(palavraChave))
       console.log(observacao)
@@ -40,7 +46,19 @@ const funcoes = {
   }
 }
 
+async function classificarcomGenAi(texto){
+  try{
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const prompt = 'Essa palavra é "apropriado" ou envolve "tema ilicito"? Responda considerando "tema ilicito" como conteudo ofensivo ou ilegal. Para tal responda apenas "apropriado" ou "tema ilicito":\n"' + texto + '"';
+    const resultado = await model.generateContent(prompt);
+    const response = await resultado.response.text();
+    const resposta = response.trim().toLowerCase();
+    return resposta.includes('ilicito') ? 'tema ilicito' : 'apropriado';
 
+  } catch (e){
+    return null;
+  }
+}
 
 app.post('/eventos', async (req, res) => {
   try{
