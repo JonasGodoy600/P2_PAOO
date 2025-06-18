@@ -22,14 +22,15 @@ app.post('/eventos', async (req, res) => {
     axios.post('http://192.168.68.110:5000/eventos', evento)
   }
   catch(e){}
+    try{
+    await axios.post('http://192.168.68.110:6000/eventos', evento)
+  }
+  catch(e){
   try{
     axios.post('http://192.168.68.110:7000/eventos', evento)
   }
   catch(e){}
-  try{
-    await axios.post('http://192.168.68.110:6000/eventos', evento)
-  }
-  catch(e){
+
     console.log('Serviço inoperante. Evento armazenado para recuperação')
   }
   res.end()

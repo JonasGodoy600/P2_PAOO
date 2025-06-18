@@ -18,12 +18,13 @@ app.post('/usuarios', (req, res) =>{
     const { nome } = req.body
     const { idade } = req.body
     const { email } = req.body
-
+    const { endereco } = req.body
     usuarios[id] = {
         id,
         nome,
         idade,
-        email
+        email,
+        endereco
     }
     axios.post('http://192.168.68.110:10000/eventos',{
         tipo: 'UsuarioCriado',

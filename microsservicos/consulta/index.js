@@ -87,7 +87,6 @@ const funcoes = {
 
 //endpoint para obtenção da base consolidada (o front end usa)
 app.get('/usuarios', (req, res) => {
-  //devolver a base consolidada como json, use o objeto res
   res.json(baseConsolidada)
 })
 //endpoint para receber eventos (o barramento usa)

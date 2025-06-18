@@ -1,11 +1,12 @@
 const axios = require('axios')
 const express = require('express')
-const {v4: uuidv4} = require('uuid')
+// const {v4: uuidv4} = require('uuid')
+let id=0
 const app = express()
-const [GoogleGenerativeA]= require('@GoogleGenerativeAI')
+// const [GoogleGenerativeA]= require('@GoogleGenerativeAI')
 app.use(express.json())
 
-const genAI =new GoogleGenerativeAI(process.env.AIzaSyC5SSpGEl9bfeMyMiQlFsRvJa7fKonAY34);
+// const genAI =new GoogleGenerativeAI(process.env.AIzaSyC5SSpGEl9bfeMyMiQlFsRvJa7fKonAY34);
 
 const lembreteDoUsuario = {}
 
@@ -14,7 +15,7 @@ const funcoes ={
     const lembrete = lembreteDoUsuario[lembretes.usuarioId]
     const lembreteAtualizar = lembrete.find( o => o.id === lembretes.id)
     lembreteAtualizar.status = lembretes.status
-    lembreteAtualizar.aproprioado = lembrete 
+    lembreteAtualizar.aproprioado = lembrete.aproprioado
     await axios.post('http://192.168.68.110:10000/eventos', {
       tipo: 'LembreteAtualizado',
       dados: lembretes
@@ -27,19 +28,20 @@ const funcoes ={
 
 //POST /lembretes () => {} (endpoint)
 app.post('/usuarios/:id/lembretes', (req, res) => {
-  const idObs = uuidv4()
+  // const idObs = uuidv4()
+  id = id+1
   const { texto } = req.body
   const status = "aguarde"
   // texto.length>=50 ? 'importante' : 'comum'
   const aproprioado = "aguarde"
   const lembretesDoUsuario = lembreteDoUsuario[req.params.id] || []
   
-  const lembretes = {
-    id: idObs,
+  lembretes[id] = {
+    id: id,
     usuarioId: req.params.id,
     texto,
-    status,
-    aproprioado
+    status:"aguardando",
+    aproprioado:"aguardando"
 
   }
   lembretesDoUsuario.push(lembretes)

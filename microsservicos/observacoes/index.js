@@ -3,7 +3,7 @@ const express = require('express')
 const {v4: uuidv4} = require('uuid')
 const app = express()
 app.use(express.json())
-const genAI =new GoogleGenerativeAI(process.env.AIzaSyActYkZOAIrMAcFN4Z24wZ1QNhXpoj1AI0);
+// const genAI =new GoogleGenerativeAI(process.env.AIzaSyActYkZOAIrMAcFN4Z24wZ1QNhXpoj1AI0);
 
 
 /*
@@ -24,6 +24,7 @@ const funcoes = {
     const observacoes = observacoesPorLembrete[observacao.lembreteId]
     const obsParaAtualizar = observacoes.find( o => o.id === observacao.id)
     obsParaAtualizar.status = observacao.status
+    obsParaAtualizar.apropriado = observacao.apropriado
     await axios.post('http://192.168.68.110:10000/eventos', {
       tipo: 'ObservacaoAtualizada',
       dados: observacao
@@ -42,7 +43,8 @@ app.post('/lembretes/:id/observacoes', (req, res) => {
     id: idObs,
     lembreteId: req.params.id,
     texto,
-    status: 'aguardando'
+    status: 'aguardando',
+    apropriado:"aguardando"
   }
   observacoesDoLembrete.push(observacao)
   //emitir um evento do tipo ObservacaoCriada, passando a observação associada ao campo dados
