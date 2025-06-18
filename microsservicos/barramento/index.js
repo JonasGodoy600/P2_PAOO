@@ -10,7 +10,10 @@ app.post('/eventos', async (req, res) => {
   console.log(evento)
   //adicionar o evento da vez à lista de eventos perdidos
   eventos.push(evento)
-  
+  try{
+    axios.post('http://192.168.68.110:3000/eventos', evento)
+  }
+  catch(e){}
   try{
     axios.post('http://192.168.68.110:4000/eventos', evento)
   }
