@@ -1,0 +1,19 @@
+{
+  "name": "lembretes",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:dev": "node --watch index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.10.0",
+    "express": "^5.1.0",
+    "uuid": "^11.1.0"
+  },
+  "description": ""
+}
