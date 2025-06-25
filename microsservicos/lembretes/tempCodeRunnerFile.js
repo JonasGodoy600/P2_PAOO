@@ -8,17 +8,15 @@ app.use(express.json())
 
 // const genAI =new GoogleGenerativeAI(process.env.AIzaSyC5SSpGEl9bfeMyMiQlFsRvJa7fKonAY34);
 
-const lembreteDoUsuario = {
-  
-}
+const lembreteDoUsuario = {}
 
 const funcoes ={
   LembreteClassificado: async (lembretes) => {
     const lembrete = lembreteDoUsuario[lembretes.usuarioId]
     const lembreteAtualizar = lembrete.find( o => o.id === lembretes.id)
-    lembreteAtualizar.status = lembretes.status
-    lembreteAtualizar.apropriado = lembrete.apropriado
-    await axios.post('http://192.168.1.111:10000/eventos', {
+    lembreteAtualizar.status = lembrete.status
+    lembreteAtualizar.aproprioado = lembrete.aproprioado
+    await axios.post('http://localhost:10000/eventos', {
       tipo: 'LembreteAtualizado',
       dados: lembretes
     })
@@ -43,11 +41,11 @@ app.post('/usuarios/:id/lembretes', (req, res) => {
     usuarioId: req.params.id,
     texto,
     status:"aguardando",
-    apropriado:"aguardando"
+    aproprioado:"aguardando"
 
   }
   lembretesDoUsuario.push(lembretes)
-  axios.post('http://192.168.1.111:10000/eventos', {
+  axios.post('http://192.168.68.110:10000/eventos', {
     tipo: 'LembreteCriado',
     dados: lembretes
   }).catch(err=>console.error("Erro no envio da mensagem", err))

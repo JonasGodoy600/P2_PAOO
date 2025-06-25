@@ -33,9 +33,8 @@ const baseConsolidada = {
 const funcoes = {
   UsuarioCriado: async (usuario) => {
     baseConsolidada.usuarios[usuario.id] = { 
-      id: usuario.id,
-      nome: usuario.nome,
-      lembretes: []
+      ... usuario,
+      lembretes: {}
     }
   },
 
@@ -46,34 +45,49 @@ const funcoes = {
     if (!usuario.lembretes) {
       usuario.lembretes = [];
     }
-
-    usuario.lembretes.push({
-      id: lembrete.id,
-      texto: lembrete.texto,
-      observacoes: []
-    });
+    baseConsolidada.usuarios[lembrete.usuarioId].lembretes[lembrete.id]= {
+      ... lembrete,
+      observacoes:[]
+    }
+    // usuario.lembretes.push({
+    //   id: lembrete.id,
+    //   texto: lembrete.texto,
+    //   observacoes: []
+    // });
   },
 
-  ObservacaoCriada: async (observacao) => {
-    const usuario = baseConsolidada.usuarios[observacao.usuarioId];
-    if (!usuario) return console.error('Usuário não encontrado');
+  LembreteAtualizado: (lembre) => {
+    baseConsolidada.usuarios[lembre.usuarioId].lembretes[lembre.id]={
+    ...lembre,
+    observacoes: baseConsolidada.usuarios[lembre.usuarioId].lembretes[lembre.id].observacoes
+    }
+  },
+  ObservacaoCriada: (observacao) => {
+    // const usuario = baseConsolidada.usuarios[observacao.usuarioId];
+    // if (!usuario) return console.error('Usuário não encontrado');
+    // {}
+    // const lembrete = usuario.lembretes.find(l => l.id === observacao.lembreteId);
+    // if (!lembrete) return console.error('Lembrete não encontrado');
+    // {}
+    const user = Object.values(baseConsolidada.usuarios).find(i => i.lembretes[observacao.lembreteId])
+    user.lembretes[observacao.lembreteId].observacoes.push(observacao)
 
-    const lembrete = usuario.lembretes.find(l => l.id === observacao.lembreteId);
-    if (!lembrete) return console.error('Lembrete não encontrado');
-
-    lembrete.observacoes = [...(lembrete.observacoes || []), {
-      id: observacao.id,
-      texto: observacao.texto,
-      lembreteId: observacao.lembreteId
-    }];
-  }
+  },
+   
+  
+  
+  ObservacaoAtualizada: async (observacao) => {
+    //atualizar a base consolidada
+    const user = Object.values(baseConsolidada.usuarios).find(i => i.lembretes[observacao.lembreteId])
+    const observacoes = user.lembretes[observacao.lembreteId].observacoes
+    const index = observacoes.findIndex(o => o.id === observacao.id)
+    observacoes[index] = observacao
+  },
 }
-  // ObservacaoAtualizada: async (observacao) => {
-  //   //atualizar a base consolidada
-  //   const observacoes = baseConsolidada[observacao.lembreteId]['observacoes']
-  //   const indice = observacoes.findIndex(o => o.id === observacao.id)
-  //   observacoes[indice] = observacao
-  // },
+
+
+//Fazer tratamento de Erro 
+
 
   // LembreteAtualizado:  async(lembrete) =>{
   //   // atualizar base lembrete
@@ -105,7 +119,7 @@ app.post('/eventos', async (req, res) => {
 const port = 6000
 app.listen(port, async () => {
   console.log(`Consulta. Porta ${port}.`)
-  const resp = await axios.get('http://localhost:10000/eventos')
+  const resp = await axios.get('http://192.168.1.111:10000/eventos')
   resp.data.forEach((eventoPerdido) => {
     try{
       funcoes[eventoPerdido.tipo](eventoPerdido.dados)

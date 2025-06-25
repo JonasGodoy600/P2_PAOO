@@ -26,7 +26,7 @@ app.post('/usuarios', (req, res) =>{
         email,
         endereco
     }
-    axios.post('http://192.168.68.110:10000/eventos',{
+    axios.post('http://192.168.1.111:10000/eventos',{
         tipo: 'UsuarioCriado',
         dados: usuarios[id]
     })

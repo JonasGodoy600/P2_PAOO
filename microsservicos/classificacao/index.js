@@ -8,20 +8,32 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 
 
-const genAI =new GoogleGenerativeAI( {apiKey:'AIzaSyActYkZOAIrMAcFN4Z24wZ1QNhXpoj1AI0'});
+const genAI =new GoogleGenerativeAI("AIzaSyBzlzSHNcQF91j1i-RDukm6n9hR-QI5IZ0");
 
+async function classificarcomGenAi(texto) {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+    const prompt = 'Essa palavra é "apropriado" ou envolve "tema ilicito"? Responda considerando "tema ilicito" como conteudo ofensivo ou ilegal. Para tal responda apenas "apropriado" ou "tema ilicito":\n"' + texto + '"';
+    const resultado = await model.generateContent(prompt);
+    const response = resultado.response;
+    const resposta = response.text().trim().toLowerCase();
+    return resposta.includes('ilicito') ? 'tema ilicito' : 'apropriado';
+  } catch (e) {
+    console.error("Erro com Genai: ", e);
+    return "indefinido";
+  }
+}
 const funcoes = {
 
   LembreteCriado: async (lembrete) => {
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-pro" })
-
-    // console.log(lembretes.status.lenght>=50)
+  // console.log(lembretes.status.lenght>=50)
     lembrete.status = lembrete.texto.length <=50 ? 'importante' : 'comum'
-    lembrete.aproprioado = await classificarcomGenAi(lembrete.texto);
-      console.log(lembrete)
+    lembrete.apropriado = await classificarcomGenAi(lembrete.texto);
+
+      console.log('Lembrete Classificado', lembrete)
 
     await axios.post(
-      'http://192.168.68.110:10000/eventos',{
+      'http://192.168.1.111:10000/eventos',{
         tipo: 'LembreteClassificado',
         dados: lembrete
       }
@@ -30,13 +42,13 @@ const funcoes = {
 
 
   ObservacaoCriada: async (observacao) => {
-    
-    observacao.aproprioado=await classificarcomGenAi(observacao.texto)||
+    observacao.status = observacao.text.includes(palavraChave) ? 'importante':'comum'
+    observacao.apropriado=await classificarcomGenAi(observacao.texto)||
     console.log(observacao.status.includes(palavraChave))
-      console.log(observacao)
+      console.log('Observacao Classificada',observacao)
 
     await axios.post(
-        'http://192.168.68.110:10000/eventos',{
+        'http://192.168.1.111:10000/eventos',{
           tipo: 'ObservacaoClassificada',
           dados: observacao
         }
@@ -44,25 +56,11 @@ const funcoes = {
   }
 }
 
-async function classificarcomGenAi(texto){
-  try{
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = 'Essa palavra é "apropriado" ou envolve "tema ilicito"? Responda considerando "tema ilicito" como conteudo ofensivo ou ilegal. Para tal responda apenas "apropriado" ou "tema ilicito":\n"' + texto + '"';
-    const resultado = await model.generateContent(prompt);
-    const response = resultado.response;
-    const resposta = response.text().trim().toLowerCase();
-    return lembrete.aproprioado.resposta.includes('ilicito') ? 'tema ilicito' : 'apropriado';
-
-  } catch (e){
-    console.error("Erro com Genai: ",e);
-    return "indefinido";
-  }
-}
 
 app.post('/eventos', async (req, res) => {
   try{
     const evento = req.body
-    console.log(evento)
+    console.log('Evento chegou',evento)
     const funcao = funcoes[evento.tipo]
     if (funcao) {
       await funcao(evento.dados)
@@ -78,7 +76,7 @@ app.post('/eventos', async (req, res) => {
 const port = 7000
 app.listen(port, async () => {console.log(`Classificação. Porta ${port}`)
   try {
-    const resposta = await axios.get('http://192.168.68.110:10000/eventos')
+    const resposta = await axios.get('http://192.168.0.227:10000/eventos')
     const eventos = resposta.data
     console.log(`Recuperando ${eventos.length} eventos perdidos`)
 
