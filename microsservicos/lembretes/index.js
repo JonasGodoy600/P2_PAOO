@@ -30,11 +30,11 @@ const funcoes ={
 
 //POST /lembretes () => {} (endpoint)
 app.post('/usuarios/:id/lembretes', (req, res) => {
-  // const idObs = uuidv4()
+  //const idObs = uuidv4()
   id = id + 1
   const { texto } = req.body
   const status = "aguarde"
-  // texto.length>=50 ? 'importante' : 'comum'
+  //texto.length>=50 ? 'importante' : 'comum'
   const aproprioado = "aguarde"
   const lembretesDoUsuario = lembreteDoUsuario[req.params.id] || []
   
